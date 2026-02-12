@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Will You Be My Valentine?</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Pacifico', cursive;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #ffc0cb, #ff9ecf);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+/* Floating hearts */
+.heart {
+    position: fixed;
+    font-size: 20px;
+    animation: floatUp 6s linear infinite;
+    opacity: 0.7;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(100vh); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(-10vh); opacity: 0; }
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+h1 {
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+button {
+    padding: 12px 25px;
+    border-radius: 30px;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: relative;
+}
+
+#yesBtn {
+    background: linear-gradient(45deg, #ff4d88, #ff1a75);
+    color: white;
+    margin-right: 20px;
+    transition: 0.3s ease;
+}
+
+#yesBtn:hover {
+    transform: scale(1.1);
+}
+
+#noBtn {
+    background: white;
+    color: #ff1a75;
+    position: fixed;
+}
+
+#secondPage {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.bigText {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.smallText {
+    font-size: 1.2rem;
+}
+</style>
+</head>
+<body>
+
+<div class="card" id="firstPage">
+    <h1>Will you be my Valentine? 💖</h1>
+    <button id="yesBtn">Yes 💕</button>
+    <button id="noBtn">No 😢</button>
+</div>
+
+<div id="secondPage">
+    <div class="bigText">I knew it ❤️</div>
+    <div class="smallText">You just made me the happiest person alive.</div>
+</div>
+
+<audio id="bgMusic" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mp3">
+</audio>
+
+<script>
+
+// Floating hearts
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+}
+setInterval(createHeart, 300);
+
+
+// ESCAPING NO BUTTON
+const noBtn = document.getElementById("noBtn");
+let tauntShown = false;
+
+document.addEventListener("mousemove", (e) => {
+
+    const rect = noBtn.getBoundingClientRect();
+    const buttonX = rect.left + rect.width / 2;
+    const buttonY = rect.top + rect.height / 2;
+
+    const dx = e.clientX - buttonX;
+    const dy = e.clientY - buttonY;
+
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // High sensitivity (250px)
+    if (distance < 250) {
+
+        const moveX = -dx * 3;
+        const moveY = -dy * 3;
+
+        let newLeft = rect.left + moveX;
+        let newTop = rect.top + moveY;
+
+        newLeft = Math.max(0, Math.min(window.innerWidth - rect.width, newLeft));
+        newTop = Math.max(0, Math.min(window.innerHeight - rect.height, newTop));
+
+        noBtn.style.left = newLeft + "px";
+        noBtn.style.top = newTop + "px";
+
+        if (!tauntShown) {
+            const taunt = document.createElement("div");
+            taunt.innerText = "Try harder 😜";
+            taunt.style.position = "fixed";
+            taunt.style.top = "20px";
+            taunt.style.left = "50%";
+            taunt.style.transform = "translateX(-50%)";
+            taunt.style.fontSize = "1.5rem";
+            taunt.style.color = "#ff0066";
+            document.body.appendChild(taunt);
+
+            tauntShown = true;
+            setTimeout(() => taunt.remove(), 2000);
+        }
+    }
+});
+
+
+// YES BUTTON
+const yesBtn = document.getElementById("yesBtn");
+const firstPage = document.getElementById("firstPage");
+const secondPage = document.getElementById("secondPage");
+const music = document.getElementById("bgMusic");
+
+yesBtn.addEventListener("click", () => {
+    firstPage.style.display = "none";
+    secondPage.style.display = "flex";
+    music.play();
+});
+
+</script>
+
+</body>
+</html>
